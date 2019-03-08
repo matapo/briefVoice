@@ -6,6 +6,8 @@ from .models import Greeting
 # Create your views here.
 def index(request):
     # return HttpResponse('Hello from Python!')
+    Greetings.objects.create()
+
     return render(request, "index.html")
 
 
@@ -15,5 +17,6 @@ def db(request):
     greeting.save()
 
     greetings = Greeting.objects.all()
+
 
     return render(request, "db.html", {"greetings": greetings})
