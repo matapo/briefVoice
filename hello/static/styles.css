@@ -9,11 +9,17 @@ body {
 div.mainDiv {
     width:35%;
     height: 100vh;
+    background-color: #fff9f9;
 }
 
 div.mapDiv {
     width:65%;
     height: 100vh;
+}
+
+.textElement {
+    font-family: Georgia, serif;
+    font-size: 33px;
 }
 
 div.spotify-frame {
