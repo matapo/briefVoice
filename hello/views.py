@@ -13,7 +13,7 @@ def root_page(request):
     except:
         pass
 
-    return render(request, "index.html")
+    return render(request, "base.html")
 
 
 def db(request):
