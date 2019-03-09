@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-import urllib2
+import urllib.request
 import json
 
 from .models import SignalData
@@ -8,7 +8,7 @@ from .models import SignalData
 def root_page(request):
     url = '130.82.239.210'
     try:
-        serialized_data = urllib2.urlopen(url).read()
+        serialized_data = urllib.request.urlopen(url).read()
         data = json.loads(serialized_data)
     except:
         pass
