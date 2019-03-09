@@ -28,22 +28,42 @@
     var map = new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/mapbox/streets-v9',
-    center: [-79.4512, 43.6568],
-    zoom: 13
+    zoom: 15,
+    center: [8.5417, 47.3769]
     });
-
-    // Add geolocate control to the map.
-    map.addControl(new mapboxgl.GeolocateControl({
-    positionOptions: {
-      enableHighAccuracy: true
-      },
-      trackUserLocation: true
-    }), 'top-left');
 
     map.addControl(new MapboxDirections({
       accessToken: mapboxgl.accessToken
     }), 'top-right');
 
+    // Add geolocate control to the map.
+    let geoTracker = new mapboxgl.GeolocateControl({
+      positionOptions: {
+        enableHighAccuracy: true
+      },
+      showUserLocation: true,
+      trackUserLocation: true
+    });
+
+
+    map.addControl(geoTracker,'top-left');
+
+    map.on('load', function()
+    {
+    	geoTracker.trigger();
+    });
+
+    geoTracker.on('geoTracker', function()
+      {
+
+      //Get the updated user location, this returns a javascript object.
+      var userlocation = geolocate._lastKnownPosition;
+
+      //Your work here - Get coordinates like so
+      var lat = userlocation.coords.latitude;
+      var lng = userlocation.coords.longitude;
+
+    });
 
   </script>
 
