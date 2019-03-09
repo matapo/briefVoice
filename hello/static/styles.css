@@ -1,21 +1,61 @@
 body {
-  margin:0;
-  display: flex;
+    margin:0;
+    display: flex;
 
-  justify-content: space-around;
-  flex-flow: row wrap;
-  align-items: stretch;
+    justify-content: space-around;
+    flex-flow: row wrap;
+    align-items: stretch;
 }
 div.mainDiv {
-  width:30%;
-  height:100vw;
-  /*margin: auto;*/
-  border: 3px solid #73AD21;
+    width:30%;
+    height: 100vh;
+    /*margin: auto;*/
+    border: 3px solid #73AD21;
+    display: flex;
+    flex-direction: column;
 }
 
 div.mapDiv {
-  width:65%;
-  height:100vw;
-  /*margin: auto;*/
-  border: 3px solid #73AD21;
+    width:65%;
+    height: 100vh;
+    /*margin: auto;*/
+    border: 3px solid #73AD21;
+}
+
+.spotify-frame {
+    justify-content: flex-end
+}
+
+#inputs,
+#errors,
+#directions {
+    position: absolute;
+    width: 33.3333%;
+    max-width: 300px;
+    min-width: 200px;
+}
+
+#inputs {
+    z-index: 10;
+    top: 10px;
+    left: 10px;
+}
+
+#directions {
+    z-index: 99;
+    background: rgba(0,0,0,.8);
+    top: 0;
+    right: 0;
+    bottom: 0;
+    overflow: auto;
+}
+
+#errors {
+    z-index: 8;
+    opacity: 0;
+    padding: 10px;
+    border-radius: 0 0 3px 3px;
+    background: rgba(0,0,0,.25);
+    top: 90px;
+    left: 10px;
 }
