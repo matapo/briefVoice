@@ -121,7 +121,10 @@
         }
 
         render() {
-            return <p>{`${this.props.name}: ${this.state.signalData}`}</p>;
+            const {
+                translation,
+            } = this.props;
+            return <p>{`${translation}: ${this.state.signalData}`}</p>;
         };
     }
 
@@ -131,20 +134,28 @@
 
             this.state = {
                 signalNames: [
-                    'ESP_Bremsdruck',
-                    'MO_Drehzahl_01',
-                    'KBI_Tankfuellstand_Prozent',
+                    'ESP_v_Signal',
+                    'MO_Gangposition',
                     'ESP_Laengsbeschl',
                     'AB_Gurtschloss_FA',
-                    'BCM1_Aussen_Temp_ungef',
+                    'MO_Drehzahl_01',
+                    'KBI_Tankfuellstand_Prozent',
+                    'ESP_Bremsdruck',
                     'KBI_Aussen_Temp_gef',
                     'FS_Temp_Sensor',
                     'FS_Luftfeuchte_rel',
-                    'ESP_v_Signal',
-                    'MO_Gangposition'
                 ],
                 signalTranslations: {
-                    'ESP_Bremsdruck': 'Brake pressure',
+                    'ESP_Bremsdruck': 'Brake Pressure',
+                    'MO_Drehzahl_01': 'RPM',
+                    'KBI_Tankfuellstand_Prozent': 'Gas Level',
+                    'ESP_Laengsbeschl': 'Acceleration ',
+                    'AB_Gurtschloss_FA': 'Is the Seat Belt On?',
+                    'KBI_Aussen_Temp_gef': 'Outside Temperature',
+                    'FS_Temp_Sensor': 'In-car Temperature',
+                    'FS_Luftfeuchte_rel': 'In-car Humidity',
+                    'ESP_v_Signal': 'Current Speed',
+                    'MO_Gangposition': 'Current Gear',
                 },
             }
         }
@@ -155,6 +166,7 @@
                     <SignalInformation
                         key={name}
                         name={name}
+                        translation={this.state.signalTranslations[name]}
                     />
                 ) : null}
             </div>;
