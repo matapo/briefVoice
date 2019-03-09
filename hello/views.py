@@ -1,9 +1,9 @@
 from django.shortcuts import render
-from django.http import HttpResponse
 import urllib.request
 import json
 
 from .models import SignalData
+
 
 def root_page(request):
     url = '130.82.239.210'
