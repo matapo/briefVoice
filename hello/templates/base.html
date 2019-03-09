@@ -46,6 +46,24 @@
     center: [8.5417, 47.3769]
     });
 
+    var longitudeMatui = null;
+    setInterval(
+        () => axios.get(`http://130.82.239.210/signal/NP_LongDegree`)
+            .then(response => {
+                longitudeMatui = response.data.signal.measurement.value;
+                console.log(`${longitudeMatui}`)
+            }), 1000
+    );
+
+    var latitudeMatui = null;
+    setInterval(
+        () => axios.get(`http://130.82.239.210/signal/NP_LatDegree`)
+            .then(response => {
+                latitudeMatui = response.data.signal.measurement.value;
+                console.log(`${latitudeMatui}`)
+            }), 1000
+    );
+
     map.addControl(new MapboxDirections({
       accessToken: mapboxgl.accessToken
     }), 'top-right');
@@ -122,8 +140,12 @@
                     'KBI_Aussen_Temp_gef',
                     'FS_Temp_Sensor',
                     'FS_Luftfeuchte_rel',
-                    'ESP_v_Signal'
+                    'ESP_v_Signal',
+                    'MO_Gangposition'
                 ],
+                signalTranslations: {
+                    'ESP_Bremsdruck': 'Brake pressure',
+                },
             }
         }
 
