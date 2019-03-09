@@ -10,4 +10,5 @@ urlpatterns = [
     path("", hello.views.root_page, name="root_page"),
     path("db/", hello.views.db, name="db"),
     path("admin/", admin.site.urls),
+    path('webhook/', include('dialogflow_webhook.urls'))
 ]
