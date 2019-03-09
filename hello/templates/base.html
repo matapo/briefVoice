@@ -1,45 +1,64 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Brief Voice</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.4.2/react.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.4.2/react-dom.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.21.1/babel.min.js"></script>
-{% load staticfiles %}
-<link rel='stylesheet' href="{% static 'styles.css' %}">
+    <title>Brief Voice</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.4.2/react.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.4.2/react-dom.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.21.1/babel.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js"></script>
+    {% load staticfiles %}
+    <link rel='stylesheet' href="{% static 'styles.css' %}">
 
-<script src='https://api.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.js'></script>
-<link href='https://api.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.css' rel='stylesheet' />
+    <script src='https://api.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.css' rel='stylesheet' />
 
 </head>
 
 <body>
 
-  <div id="root" class="mainDiv"></div>
+<div id="root" class="mainDiv"></div>
 
+<div class="mapDiv" id='map'></div>
 
-  <div class="mapDiv" id='map'></div>
+{#<script>#}
+{#    mapboxgl.accessToken = 'pk.eyJ1IjoibWF0YXMtcG9jZXZpY2l1cyIsImEiOiJjanQxbjRkdnEwY2Z3M3pwMzhjaWt0aHdkIn0.vPMyhueqXv5NMGMud0FjLA';#}
+{#    var map = new mapboxgl.Map({#}
+{#        container: 'map',#}
+{#        style: 'mapbox://styles/mapbox/streets-v11'#}
+{#    });#}
+{#</script>#}
 
-  <script>
-  mapboxgl.accessToken = 'pk.eyJ1IjoibWF0YXMtcG9jZXZpY2l1cyIsImEiOiJjanQxbjRkdnEwY2Z3M3pwMzhjaWt0aHdkIn0.vPMyhueqXv5NMGMud0FjLA';
-    var map = new mapboxgl.Map({
-    container: 'map',
-    style: 'mapbox://styles/mapbox/streets-v11'
-    });
-  </script>
+<script type="text/babel">
+    class SignalInformation extends React.Component {
+        render() {
+            return <p>{this.props.text}</p>;
+        }
+    }
 
+    class SignalInformationContainer extends React.Component {
+        constructor(props) {
+            super(props);
+            this.state = {
+                signalInfo: [],
+            }
+        }
 
-  <script type="text/babel">
-  class Greeting extends React.Component {
-      render() {
-          return (<p>Hello world</p>);
-      }
-  }
-  ReactDOM.render(
-      <Greeting />,
-      document.getElementById('root')
-  );
-  </script>
+        componentDidMount() {
+            axios.get('http://130.82.239.210/list')
+                .then(response => this.setState({signalInfo: response}))
+        }
+
+        render() {
+            return <SignalInformation
+                text={`${this.state.signalInfo}`}
+            />;
+        }
+    }
+    ReactDOM.render(
+        <SignalInformationContainer />,
+        document.getElementById('root')
+    );
+</script>
 
 </body>
 </html>
