@@ -1,9 +1,15 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+import urllib2
+import json
 
 from .models import SignalData
 
 def root_page(request):
+    url = '130.82.239.210'
+    serialized_data = urllib2.urlopen(url).read()
+    data = json.loads(serialized_data)
+
     return render(request, "index.html")
 
 
