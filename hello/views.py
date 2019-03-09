@@ -1,22 +1,12 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 
-from .models import Greeting
+from .models import SignalData
 
-# Create your views here.
-def index(request):
-    # return HttpResponse('Hello from Python!')
-    #Greeting.objects.create()
-
+def root_page(request):
     return render(request, "index.html")
 
 
 def db(request):
-
-    greeting = Greeting()
-    greeting.save()
-
-    greetings = Greeting.objects.all()
-
-
-    return render(request, "db.html", {"greetings": greetings})
+    all_signal_data = SignalData.objects.all()
+    return render(request, "db.html", {"All signal data": all_signal_data})
