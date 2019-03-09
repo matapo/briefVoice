@@ -98,7 +98,7 @@
                 .then(response => {
                     this.setState({signalData: response.data.signal.measurement.value,
                     })
-                }), 5000
+                }), 1000
             )
         }
 
@@ -126,11 +126,6 @@
                 ],
             }
         }
-
-        {#componentDidMount() {#}
-        {#    axios.get(`http://130.82.239.210/signal/${signalNames[0]}`)#}
-        {#        .then(response => this.setState({signalInfo: response}))#}
-        {#}#}
 
         render() {
             return <div>
