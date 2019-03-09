@@ -1,4 +1,4 @@
-signal_names = [
+signal_names_list = [
 "AB_Gurtschloss_BF",
 "AB_Gurtschloss_FA",
 "AB_Gurtschloss_Reihe2_BF",
