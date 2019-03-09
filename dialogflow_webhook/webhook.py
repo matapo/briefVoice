@@ -3,7 +3,25 @@ from django.http import JsonResponse, HttpResponse
 
 def serve(request):
     response = {
-        "yes" : "okk"
+  "payload": {
+    "google": {
+      "expectUserResponse": True,
+      "richResponse": {
+        "items": [
+          {
+            "simpleResponse": {
+              "textToSpeech": "I can send you alerts. Would you like that?"
+            }
+          }
+        ],
+        "suggestions": [
+          {
+            "title": "Alert me of new tips"
+          }
+        ]
+      }
     }
+  }
+}
 
-    return HttpResponse('Works like a charm!')
+    return JsonResponse(response,safe=False)
