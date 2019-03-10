@@ -92,7 +92,7 @@
 
 
         <div id = "gearImg">
-            <img id = "gearImgID" src="http://icons.iconarchive.com/icons/icons8/ios7/256/Astrology-Air-Element-icon.png">
+            <img id = "gearImgIDi" src="http://icons.iconarchive.com/icons/icons8/ios7/256/Astrology-Air-Element-icon.png">
         </div>
 
         <div id="airQuality">
@@ -100,9 +100,11 @@
         </div>
     </div>
 
-    <div id="temperatureMsg">
-    </div>
+    <div id="temperatureMsg"></div>
 
+    <div class= "carCla" id = "carImg">
+        <img id = "carImgID" src="https://i.ibb.co/86zgPw5/noSignal.png">
+    </div>
 
     <div id="root" class="root"></div>
 
@@ -130,17 +132,16 @@
 <script>
     var longitudeMatui = 8.4;
     var latitudeMatui = 40.2;
-    var DateObj = new Date();
 
     setInterval(
-        () => axios.get(`http://130.82.239.210/signal/NP_LongDegree`)
+        () => axios.get(`http://192.168.8.10/signal/NP_LongDegree`)
             .then(response => {
-                longitudeMatui = parseFloat(response.data.signal.measurement.value) + DateObj.getSeconds() / 100;
+                longitudeMatui = parseFloat(response.data.signal.measurement.value);
             }), 1000
     );
 
     setInterval(
-        () => axios.get(`http://130.82.239.210/signal/NP_LatDegree`)
+        () => axios.get(`http://192.168.8.10/signal/NP_LatDegree`)
             .then(response => {
                 latitudeMatui = parseFloat(response.data.signal.measurement.value);
             }), 1000
@@ -210,7 +211,7 @@
 
         componentDidMount() {
             this.timer = setInterval(
-                () => axios.get(`http://130.82.239.210/signal/${this.props.name}`)
+                () => axios.get(`http://192.168.8.10/signal/${this.props.name}`)
                     .then(response => {
                         speechSynthesis.resume();
                         const data = response.data.signal.measurement.value;
@@ -303,7 +304,7 @@
                     if (signalData >=30 && signalData <= 50) {
                         document.getElementById("airQuality").innerHTML = "Comfortable";
                     } else {
-                        document.getElementById("airQuality").innerHTML = "Needs Change";
+                        document.getElementById("airQuality").innerHTML = "ADJUST";
                     }
                 }
                 return null
@@ -325,6 +326,39 @@
                         document.getElementById('gearImg1').style.background = "red";
                     }
                 }
+                return null
+            }
+
+            if (name === 'BH_Blinker_li') {
+              console.log("left"+signalData);
+                if (signalData !== null){
+                    if (signalData === "1") {
+                      console.log("baba");
+
+                        document.getElementById('carImgID').src="https://i.ibb.co/R2Vb101/left-Signal.png";
+                    } else {
+                        document.getElementById('carImgID').src="https://i.ibb.co/86zgPw5/noSignal.png";
+                    }
+                }
+                return null
+            }
+
+            if (name === 'BH_Blinker_re') {
+              console.log("right"+signalData);
+
+                if (signalData !== null){
+                    if (signalData === "1") {
+                      console.log("baba");
+
+                        document.getElementById('carImgID').src="https://i.ibb.co/k9yyBjp/right-Signal.png";
+                    } else {
+                        document.getElementById('carImgID').src="https://i.ibb.co/86zgPw5/noSignal.png";
+                    }
+                }
+                return null
+            }
+
+            if (name === 'MO_Drehzahl_01' || name === 'KBI_Aussen_Temp_gef' || name === 'ESP_Laengsbeschl' || name === 'ESP_Bremsdruck') {
                 return null
             }
 
