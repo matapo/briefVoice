@@ -1,170 +1,173 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <title>Brief Voice</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.4.2/react.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.4.2/react-dom.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.21.1/babel.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js"></script>
-    {% load staticfiles %}
-    <link rel='stylesheet' href="{% static 'styles.css' %}">
-    <script src='https://api.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.js'></script>
-    <link href='https://api.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.css' rel='stylesheet' />
+  <title>Brief Voice</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.4.2/react.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.4.2/react-dom.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.21.1/babel.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js"></script>
+  {% load staticfiles %}
+  <link rel='stylesheet' href="{% static 'styles.css' %}">
+  <script src='https://api.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.js'></script>
+  <link href='https://api.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.css' rel='stylesheet' />
 </head>
 
 <body>
 
-<div id="root-container" class="mainDiv">
+  <div id="root-container" class="mainDiv">
     <div id="root"> </div>
     <div class="spotify-frame">
-        <iframe
-                src="https://open.spotify.com/embed/user/mataspo/playlist/4iBO7KQXgzfV3z2OJ1YFUt"
-                width="100%"
-                height="100%"
-                frameborder="0"
-                allowtransparency="true"
-                allow="encrypted-media">
-        </iframe>
+      <iframe src="https://open.spotify.com/embed/user/mataspo/playlist/4iBO7KQXgzfV3z2OJ1YFUt" width="100%" height="100%" frameborder="0" allowtransparency="true" allow="encrypted-media">
+      </iframe>
     </div>
-</div>
+  </div>
 
-<script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.0.0/mapbox-gl-directions.js'></script>
-<link
-        rel='stylesheet'
-        href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.0.0/mapbox-gl-directions.css'
-        type='text/css'
-/>
+  <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.0.0/mapbox-gl-directions.js'></script>
+  <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.0.0/mapbox-gl-directions.css' type='text/css' />
 
-<div class="mapDiv" id='map'></div>
+  <div class="mapDiv" id='map'></div>
 
-<script>
+  <script>
+    var longitudeMatui = 8.4;
+    var latitudeMatui = 40.2;
+    var DateObj = new Date();
+
+    console.log(longitudeMatui, latitudeMatui)
+    setInterval(
+      () => axios.get(`http://130.82.239.210/signal/NP_LongDegree`)
+      .then(response => {
+        longitudeMatui = parseFloat(response.data.signal.measurement.value) + DateObj.getSeconds() / 100;
+        console.log(`${longitudeMatui}`)
+      }), 1000
+    );
+
+    setInterval(
+      () => axios.get(`http://130.82.239.210/signal/NP_LatDegree`)
+      .then(response => {
+        latitudeMatui = parseFloat(response.data.signal.measurement.value);
+        console.log(`${latitudeMatui}`)
+      }), 1000
+    );
+
     mapboxgl.accessToken = 'pk.eyJ1IjoibWF0YXMtcG9jZXZpY2l1cyIsImEiOiJjanQxbjRkdnEwY2Z3M3pwMzhjaWt0aHdkIn0.vPMyhueqXv5NMGMud0FjLA';
     var map = new mapboxgl.Map({
-    container: 'map',
-    style: 'mapbox://styles/mapbox/streets-v9',
-    zoom: 15,
-    center: [8.5417, 47.3769]
+      container: 'map',
+      style: 'mapbox://styles/mapbox/basic-v9',
+      zoom: 5,
+      center: [longitudeMatui, latitudeMatui]
     });
-
-    var longitudeMatui = null;
-    setInterval(
-        () => axios.get(`http://130.82.239.210/signal/NP_LongDegree`)
-            .then(response => {
-                longitudeMatui = response.data.signal.measurement.value;
-                console.log(`${longitudeMatui}`)
-            }), 1000
-    );
-
-    var latitudeMatui = null;
-    setInterval(
-        () => axios.get(`http://130.82.239.210/signal/NP_LatDegree`)
-            .then(response => {
-                latitudeMatui = response.data.signal.measurement.value;
-                console.log(`${latitudeMatui}`)
-            }), 1000
-    );
 
     map.addControl(new MapboxDirections({
       accessToken: mapboxgl.accessToken
     }), 'top-right');
 
-    // Add geolocate control to the map.
-    let geoTracker = new mapboxgl.GeolocateControl({
-      positionOptions: {
-        enableHighAccuracy: true
-      },
-      showUserLocation: true,
-      trackUserLocation: true
-    });
+    function pointOnCircle() {
+      return {
+        "type": "Point",
+        "coordinates": [longitudeMatui, latitudeMatui]
+      };
+    }
+
+    map.on('load', function() {
+
+      map.addSource('point', {
+        "type": "geojson",
+        "data": pointOnCircle()
+      });
+      //
+      map.addLayer({
+        "id": "points",
+        "source": "point",
+        "type": "circle",
+        "paint": {
+          "circle-radius": 10,
+          "circle-color": "#007cbf"
+        }
+      });
+    })
+
+    map.on('data', function() {
+      map.flyTo({
+        center: [longitudeMatui, latitudeMatui],
+        zoom: 15,
+        speed: 100,
+      });
+
+      if (map.getSource('point')) {
+        map.getSource('point').setData(pointOnCircle())
+      };
+
+    })
+  </script>
 
 
-    map.addControl(geoTracker,'top-left');
-
-    map.on('load', function()
-    {
-    	geoTracker.trigger();
-    });
-
-    geoTracker.on('geoTracker', function()
-      {
-
-      //Get the updated user location, this returns a javascript object.
-      var userlocation = geolocate._lastKnownPosition;
-
-      //Your work here - Get coordinates like so
-      var lat = userlocation.coords.latitude;
-      var lng = userlocation.coords.longitude;
-
-    });
-
-</script>
-
-
-<script type="text/babel">
+  <script type="text/babel">
     class SignalInformation extends React.Component {
-        constructor(props) {
-            super(props);
+    constructor(props) {
+        super(props);
 
-            this.state = {
-                signalData: null,
-            }
-        }
-
-        componentDidMount() {
-            this.timer = setInterval(
-                () => axios.get(`http://130.82.239.210/signal/${this.props.name}`)
-                .then(response => {
-                    this.setState({signalData: response.data.signal.measurement.value,
-                    })
-                }), 1000
-            )
-        }
-
-        render() {
-            return <p>{`${this.props.name}: ${this.state.signalData}`}</p>;
-        };
-    }
-
-    class SignalInformationContainer extends React.Component {
-        constructor(props) {
-            super(props);
-
-            this.state = {
-                signalNames: [
-                    'ESP_Bremsdruck',
-                    'MO_Drehzahl_01',
-                    'KBI_Tankfuellstand_Prozent',
-                    'ESP_Laengsbeschl',
-                    'AB_Gurtschloss_FA',
-                    'BCM1_Aussen_Temp_ungef',
-                    'KBI_Aussen_Temp_gef',
-                    'FS_Temp_Sensor',
-                    'FS_Luftfeuchte_rel',
-                    'ESP_v_Signal',
-                    'MO_Gangposition'
-                ],
-                signalTranslations: {
-                    'ESP_Bremsdruck': 'Brake pressure',
-                },
-            }
-        }
-
-        render() {
-            return <div>
-                {this.state.signalNames ? this.state.signalNames.map(name =>
-                    <SignalInformation
-                        key={name}
-                        name={name}
-                    />
-                ) : null}
-            </div>;
+        this.state = {
+            signalData: null,
         }
     }
-    ReactDOM.render(
-        <SignalInformationContainer />,
-        document.getElementById('root')
-    );
+
+    componentDidMount() {
+        this.timer = setInterval(
+            () => axios.get(`http://130.82.239.210/signal/${this.props.name}`)
+            .then(response => {
+                this.setState({signalData: response.data.signal.measurement.value,
+                })
+            }), 1000
+        )
+    }
+
+    render() {
+        return <p>{`${this.props.name}: ${this.state.signalData}`}</p>;
+    };
+}
+
+class SignalInformationContainer extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            signalNames: [
+                'ESP_Bremsdruck',
+                'MO_Drehzahl_01',
+                'KBI_Tankfuellstand_Prozent',
+                'ESP_Laengsbeschl',
+                'AB_Gurtschloss_FA',
+                'BCM1_Aussen_Temp_ungef',
+                'KBI_Aussen_Temp_gef',
+                'FS_Temp_Sensor',
+                'FS_Luftfeuchte_rel',
+                'ESP_v_Signal',
+                'MO_Gangposition'
+            ],
+            signalTranslations: {
+                'ESP_Bremsdruck': 'Brake pressure',
+            },
+        }
+    }
+
+    render() {
+        return <div>
+            {this.state.signalNames ? this.state.signalNames.map(name =>
+                <SignalInformation
+                    key={name}
+                    name={name}
+                />
+            ) : null}
+        </div>;
+    }
+}
+ReactDOM.render(
+    <SignalInformationContainer />,
+    document.getElementById('root')
+);
 </script>
 
 </body>
+
 </html>
