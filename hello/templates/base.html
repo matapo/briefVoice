@@ -134,14 +134,14 @@
     var latitudeMatui = 40.2;
 
     setInterval(
-        () => axios.get(`http://192.168.8.10/signal/NP_LongDegree`)
+        () => axios.get(`http://130.82.239.210/signal/NP_LongDegree`)
             .then(response => {
                 longitudeMatui = parseFloat(response.data.signal.measurement.value);
             }), 1000
     );
 
     setInterval(
-        () => axios.get(`http://192.168.8.10/signal/NP_LatDegree`)
+        () => axios.get(`http://130.82.239.210/signal/NP_LatDegree`)
             .then(response => {
                 latitudeMatui = parseFloat(response.data.signal.measurement.value);
             }), 1000
@@ -211,7 +211,7 @@
 
         componentDidMount() {
             this.timer = setInterval(
-                () => axios.get(`http://192.168.8.10/signal/${this.props.name}`)
+                () => axios.get(`http://130.82.239.210/signal/${this.props.name}`)
                     .then(response => {
                         speechSynthesis.resume();
                         const data = response.data.signal.measurement.value;
