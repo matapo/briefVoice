@@ -150,11 +150,13 @@
 
         render() {
             const {
+                name,
                 translation,
             } = this.props;
+            const signalData = this.state.signalData;
             const textElement = <div className="textElement">
-                <p>
-                    {`${translation}: ${this.state.signalData}`}
+                <p className={`${name}-${signalData ? signalData : null}`}>
+                    {`${translation}: ${signalData}`}
                 </p>
             </div>;
             return textElement
