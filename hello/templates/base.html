@@ -107,6 +107,7 @@
 
             this.state = {
                 signalData: null,
+                speaking: false,
             }
         }
 
@@ -122,7 +123,12 @@
                                 3: 'Fastened',
                             };
                             this.setState({signalData: valueMap[response.data.signal.measurement.value],
-                            })
+                            });
+                            if (valueMap[response.data.signal.measurement.value] !== 'Fastened'
+                                && !this.state.speaking) {
+                                var msg = new SpeechSynthesisUtterance('Please put the seatbelt on.');
+                                window.speechSynthesis.speak(msg);
+                            }
                         } else if(this.props.name === 'KBI_Tankfuellstand_Prozent'
                             || this.props.name === 'FS_Luftfeuchte_rel') {
                             this.setState({signalData: `${response.data.signal.measurement.value}%`,
@@ -192,7 +198,15 @@
                     'ESP_v_Signal': 'Current Speed',
                     'MO_Gangposition': 'Current Gear',
                 },
+                isSpeaking: false,
             }
+
+        }
+
+        changeSpeakingState() {
+            this.setState({
+                isSpeaking: !this.state.isSpeaking,
+            })
         }
 
         render() {
@@ -202,6 +216,7 @@
                         key={name}
                         name={name}
                         translation={this.state.signalTranslations[name]}
+                        changeSpeakingState={() => this.changeSpeakingState()}
                     />
                 ) : null}
             </div>;
