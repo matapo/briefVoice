@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Brief Voice</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.4.2/react.js"></script>
@@ -38,65 +39,74 @@
 <div class="mapDiv" id='map'></div>
 
 <script>
-    mapboxgl.accessToken = 'pk.eyJ1IjoibWF0YXMtcG9jZXZpY2l1cyIsImEiOiJjanQxbjRkdnEwY2Z3M3pwMzhjaWt0aHdkIn0.vPMyhueqXv5NMGMud0FjLA';
-    var map = new mapboxgl.Map({
-    container: 'map',
-    style: 'mapbox://styles/mapbox/streets-v9',
-    zoom: 15,
-    center: [8.5417, 47.3769]
-    });
+    var longitudeMatui = 8.4;
+    var latitudeMatui = 40.2;
+    var DateObj = new Date();
 
-    var longitudeMatui = null;
+    console.log(longitudeMatui, latitudeMatui)
     setInterval(
         () => axios.get(`http://130.82.239.210/signal/NP_LongDegree`)
             .then(response => {
-                longitudeMatui = response.data.signal.measurement.value;
-                console.log(`${longitudeMatui}`)
+                longitudeMatui = parseFloat(response.data.signal.measurement.value) + DateObj.getSeconds() / 100;
             }), 1000
     );
 
-    var latitudeMatui = null;
     setInterval(
         () => axios.get(`http://130.82.239.210/signal/NP_LatDegree`)
             .then(response => {
-                latitudeMatui = response.data.signal.measurement.value;
-                console.log(`${latitudeMatui}`)
+                latitudeMatui = parseFloat(response.data.signal.measurement.value);
             }), 1000
     );
 
+    mapboxgl.accessToken = 'pk.eyJ1IjoibWF0YXMtcG9jZXZpY2l1cyIsImEiOiJjanQxbjRkdnEwY2Z3M3pwMzhjaWt0aHdkIn0.vPMyhueqXv5NMGMud0FjLA';
+    var map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/basic-v9',
+        zoom: 5,
+        center: [longitudeMatui, latitudeMatui]
+    });
+
     map.addControl(new MapboxDirections({
-      accessToken: mapboxgl.accessToken
+        accessToken: mapboxgl.accessToken
     }), 'top-right');
 
-    // Add geolocate control to the map.
-    let geoTracker = new mapboxgl.GeolocateControl({
-      positionOptions: {
-        enableHighAccuracy: true
-      },
-      showUserLocation: true,
-      trackUserLocation: true
+    function pointOnCircle() {
+        return {
+            "type": "Point",
+            "coordinates": [longitudeMatui, latitudeMatui]
+        };
+    }
+
+    map.on('load', function() {
+
+        map.addSource('point', {
+            "type": "geojson",
+            "data": pointOnCircle()
+        });
+        //
+        map.addLayer({
+            "id": "points",
+            "source": "point",
+            "type": "circle",
+            "paint": {
+                "circle-radius": 10,
+                "circle-color": "#007cbf"
+            }
+        });
     });
 
+    map.on('data', function() {
+        map.flyTo({
+            center: [longitudeMatui, latitudeMatui],
+            zoom: 15,
+            speed: 100,
+        });
 
-    map.addControl(geoTracker,'top-left');
+        if (map.getSource('point')) {
+            map.getSource('point').setData(pointOnCircle())
+        }
 
-    map.on('load', function()
-    {
-    	geoTracker.trigger();
-    });
-
-    geoTracker.on('geoTracker', function()
-      {
-
-      //Get the updated user location, this returns a javascript object.
-      var userlocation = geolocate._lastKnownPosition;
-
-      //Your work here - Get coordinates like so
-      var lat = userlocation.coords.latitude;
-      var lng = userlocation.coords.longitude;
-
-    });
-
+    })
 </script>
 
 
