@@ -107,6 +107,11 @@
     constructor(props) {
         super(props);
 
+        this.state = {
+          signalData: null,
+        }
+      }
+
         componentDidMount() {
             this.timer = setInterval(
                 () => axios.get(`http://130.82.239.210/signal/${this.props.name}`)
@@ -144,7 +149,6 @@
                     }), 1000
             )
         }
-    }
 
         render() {
             const {
@@ -192,7 +196,7 @@
                 },
             }
         }
-    }
+
 
         render() {
             return <div>
@@ -205,7 +209,6 @@
                 ) : null}
             </div>;
         }
-    }
 }
 ReactDOM.render(
     <SignalInformationContainer />,
