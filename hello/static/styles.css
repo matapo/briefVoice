@@ -9,11 +9,29 @@ body {
 div.mainDiv {
     width:35%;
     height: 100vh;
+    background-color: #fff9f9;
+    border-radius: 23px;
 }
 
 div.mapDiv {
     width:65%;
     height: 100vh;
+    border-radius: 23px;
+}
+
+.textElement {
+    font-family: Georgia, serif;
+    font-size: 33px;
+}
+
+.AB_Gurtschloss_FA-Fastened {
+    color: green;
+}
+
+.AB_Gurtschloss_FA-Not.Fastened,
+.AB_Gurtschloss_FA-Initialization,
+.AB_Gurtschloss_FA-Not.Built-in  {
+    color: red;
 }
 
 div.spotify-frame {

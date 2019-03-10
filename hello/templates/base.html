@@ -107,59 +107,104 @@
     constructor(props) {
         super(props);
 
-        this.state = {
-            signalData: null,
+        componentDidMount() {
+            this.timer = setInterval(
+                () => axios.get(`http://130.82.239.210/signal/${this.props.name}`)
+                    .then(response => {
+                        if (this.props.name === 'AB_Gurtschloss_FA') {
+                            const valueMap = {
+                                0: 'Not Built-in',
+                                1: 'Initialization',
+                                2: 'Not Fastened',
+                                3: 'Fastened',
+                            };
+                            this.setState({signalData: valueMap[response.data.signal.measurement.value],
+                            })
+                        } else if(this.props.name === 'KBI_Tankfuellstand_Prozent'
+                            || this.props.name === 'FS_Luftfeuchte_rel') {
+                            this.setState({signalData: `${response.data.signal.measurement.value}%`,
+                            })
+                        } else if (this.props.name.includes("Temp")) {
+                            this.setState({signalData: `${response.data.signal.measurement.value} C`,
+                            })
+                        } else if (this.props.name === 'ESP_v_Signal') {
+                            this.setState({signalData: `${response.data.signal.measurement.value.toFixed(3)} m/s`,
+                            })
+                        } else if (this.props.name === 'ESP_Laengsbeschl') {
+                            this.setState({signalData: `${response.data.signal.measurement.value.toFixed(3)} m/s^2`,
+                            })
+                        } else if (this.props.name === 'ESP_Bremsdruck') {
+                            this.setState({signalData: `${response.data.signal.measurement.value.toFixed(3)} Bar`,
+                            })
+                        } else {
+                            this.setState({
+                                signalData: `${response.data.signal.measurement.value}`,
+                            })
+                        }
+                    }), 1000
+            )
         }
     }
 
-    componentDidMount() {
-        this.timer = setInterval(
-            () => axios.get(`http://130.82.239.210/signal/${this.props.name}`)
-            .then(response => {
-                this.setState({signalData: response.data.signal.measurement.value,
-                })
-            }), 1000
-        )
+        render() {
+            const {
+                name,
+                translation,
+            } = this.props;
+            const signalData = this.state.signalData;
+            const textElement = <div className="textElement">
+                <p className={`${name}-${signalData ? signalData : null}`}>
+                    {`${translation}: ${signalData}`}
+                </p>
+            </div>;
+            return textElement
+        };
     }
 
-    render() {
-        return <p>{`${this.props.name}: ${this.state.signalData}`}</p>;
-    };
-}
+    class SignalInformationContainer extends React.Component {
+        constructor(props) {
+            super(props);
 
-class SignalInformationContainer extends React.Component {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            signalNames: [
-                'ESP_Bremsdruck',
-                'MO_Drehzahl_01',
-                'KBI_Tankfuellstand_Prozent',
-                'ESP_Laengsbeschl',
-                'AB_Gurtschloss_FA',
-                'BCM1_Aussen_Temp_ungef',
-                'KBI_Aussen_Temp_gef',
-                'FS_Temp_Sensor',
-                'FS_Luftfeuchte_rel',
-                'ESP_v_Signal',
-                'MO_Gangposition'
-            ],
-            signalTranslations: {
-                'ESP_Bremsdruck': 'Brake pressure',
-            },
+            this.state = {
+                signalNames: [
+                    'ESP_v_Signal',
+                    'MO_Gangposition',
+                    'ESP_Laengsbeschl',
+                    'AB_Gurtschloss_FA',
+                    'MO_Drehzahl_01',
+                    'KBI_Tankfuellstand_Prozent',
+                    'ESP_Bremsdruck',
+                    'KBI_Aussen_Temp_gef',
+                    'FS_Temp_Sensor',
+                    'FS_Luftfeuchte_rel',
+                ],
+                signalTranslations: {
+                    'ESP_Bremsdruck': 'Brake Pressure',
+                    'MO_Drehzahl_01': 'RPM',
+                    'KBI_Tankfuellstand_Prozent': 'Gas Level',
+                    'ESP_Laengsbeschl': 'Acceleration',
+                    'AB_Gurtschloss_FA': 'The Seat Belt',
+                    'KBI_Aussen_Temp_gef': 'Outside Temperature',
+                    'FS_Temp_Sensor': 'In-car Temperature',
+                    'FS_Luftfeuchte_rel': 'In-car Humidity',
+                    'ESP_v_Signal': 'Current Speed',
+                    'MO_Gangposition': 'Current Gear',
+                },
+            }
         }
     }
 
-    render() {
-        return <div>
-            {this.state.signalNames ? this.state.signalNames.map(name =>
-                <SignalInformation
-                    key={name}
-                    name={name}
-                />
-            ) : null}
-        </div>;
+        render() {
+            return <div>
+                {this.state.signalNames ? this.state.signalNames.map(name =>
+                    <SignalInformation
+                        key={name}
+                        name={name}
+                        translation={this.state.signalTranslations[name]}
+                    />
+                ) : null}
+            </div>;
+        }
     }
 }
 ReactDOM.render(
