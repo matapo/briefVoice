@@ -10,6 +10,7 @@
     {% load staticfiles %}
     <link rel='stylesheet' href="{% static 'styles.css' %}">
     <script src='https://api.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.js'></script>
+    <script src="http://code.responsivevoice.org/responsivevoice.js"></script>
     <link href='https://api.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.css' rel='stylesheet' />
 </head>
 
@@ -43,7 +44,6 @@
     var latitudeMatui = 40.2;
     var DateObj = new Date();
 
-    console.log(longitudeMatui, latitudeMatui)
     setInterval(
         () => axios.get(`http://130.82.239.210/signal/NP_LongDegree`)
             .then(response => {
@@ -117,14 +117,15 @@
 
             this.state = {
                 signalData: null,
-                speaking: false,
-            }
+            };
         }
 
         componentDidMount() {
             this.timer = setInterval(
                 () => axios.get(`http://130.82.239.210/signal/${this.props.name}`)
                     .then(response => {
+                        speechSynthesis.resume();
+                        const data = response.data.signal.measurement.value;
                         if (this.props.name === 'AB_Gurtschloss_FA') {
                             const valueMap = {
                                 0: 'Not Built-in',
@@ -132,36 +133,40 @@
                                 2: 'Not Fastened',
                                 3: 'Fastened',
                             };
-                            this.setState({signalData: valueMap[response.data.signal.measurement.value],
-                            });
-                            if (valueMap[response.data.signal.measurement.value] !== 'Fastened'
-                                && !this.state.speaking) {
-                                var msg = new SpeechSynthesisUtterance('Please put the seatbelt on.');
-                                window.speechSynthesis.speak(msg);
+                            if (valueMap[data] !== 'Fastened') {
+                                this.props.textToSpeech("Please put the seat belt on.");
                             }
+                            this.setState({signalData: valueMap[data]});
                         } else if(this.props.name === 'KBI_Tankfuellstand_Prozent'
                             || this.props.name === 'FS_Luftfeuchte_rel') {
-                            this.setState({signalData: `${response.data.signal.measurement.value}%`,
+                            this.setState({signalData: `${data}%`,
                             })
                         } else if (this.props.name.includes("Temp")) {
-                            this.setState({signalData: `${response.data.signal.measurement.value} C`,
+                            this.setState({signalData: `${data} C`,
                             })
                         } else if (this.props.name === 'ESP_v_Signal') {
-                            this.setState({signalData: `${response.data.signal.measurement.value.toFixed(3)} m/s`,
+                            if (data > 14) {
+                                this.props.textToSpeech("You are driving too fast. Please slow down.");
+                            }
+                            this.setState({signalData: `${data.toFixed(3)} m/s`,
                             })
                         } else if (this.props.name === 'ESP_Laengsbeschl') {
-                            this.setState({signalData: `${response.data.signal.measurement.value.toFixed(3)} m/s^2`,
+                            this.setState({signalData: `${data.toFixed(3)} m/s^2`,
                             })
                         } else if (this.props.name === 'ESP_Bremsdruck') {
-                            this.setState({signalData: `${response.data.signal.measurement.value.toFixed(3)} Bar`,
+                            this.setState({signalData: `${data.toFixed(3)} Bar`,
                             })
                         } else {
                             this.setState({
-                                signalData: `${response.data.signal.measurement.value}`,
+                                signalData: `${data}`,
                             })
                         }
-                    }), 1000
+                    }), 3000
             )
+        }
+
+        componentWillUnmount() {
+            clearInterval(this.interval);
         }
 
         render() {
@@ -208,15 +213,16 @@
                     'ESP_v_Signal': 'Current Speed',
                     'MO_Gangposition': 'Current Gear',
                 },
-                isSpeaking: false,
-            }
-
+            };
+            this.speechSynthesis = new SpeechSynthesisUtterance();
         }
 
-        changeSpeakingState() {
-            this.setState({
-                isSpeaking: !this.state.isSpeaking,
-            })
+        textToSpeech(message) {
+            this.speechSynthesis.text = message;
+            const voices = window.speechSynthesis.getVoices();
+            this.speechSynthesis.voice  = voices[3];
+            speechSynthesis.speak(this.speechSynthesis);
+            speechSynthesis.resume()
         }
 
         render() {
@@ -226,7 +232,7 @@
                         key={name}
                         name={name}
                         translation={this.state.signalTranslations[name]}
-                        changeSpeakingState={() => this.changeSpeakingState()}
+                        textToSpeech={message => this.textToSpeech(message)}
                     />
                 ) : null}
             </div>;
