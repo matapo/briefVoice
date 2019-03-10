@@ -234,7 +234,7 @@
                             this.setState({signalData: `${data} C`,
                             })
                         } else if (this.props.name === 'ESP_v_Signal') {
-                            if (data > 11) {
+                            if (data > 40) {
                                 this.props.textToSpeech("You are driving too fast. Please slow down.");
                             }
                             this.setState({signalData: `${data.toFixed(3)} m/s`,
