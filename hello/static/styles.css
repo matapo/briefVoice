@@ -1,4 +1,6 @@
 body {
+    font-family: 'Roboto', sans-serif;
+
     margin:0;
     display: flex;
 
@@ -10,18 +12,15 @@ div.mainDiv {
     width:35%;
     height: 100vh;
     background-color: #fff9f9;
-    border-radius: 23px;
 }
 
 div.mapDiv {
     width:65%;
     height: 100vh;
-    border-radius: 23px;
 }
 
 .textElement {
-    font-family: Georgia, serif;
-    font-size: 33px;
+    font-size: 2em;
 }
 
 .AB_Gurtschloss_FA-Fastened {
@@ -39,4 +38,81 @@ div.spotify-frame {
   bottom: 0;
   width: 35%;
   height: 30%;
+  opacity: 0.9;
+}
+
+div.root {
+  overflow: hidden;
+  height: 70%;
+}
+
+div.gears {
+  display: flex;
+  justify-content: space-evenly;
+  flex-flow: row wrap;
+  align-items: center;
+}
+
+div.gear {
+  width: 14.28%;
+  color: black;
+  font-weight: bold;
+  font-size: 2em;
+  text-align: center;
+  border-radius: 20%;
+}
+
+#gearImg {
+  width: 14.28%;
+}
+
+#gearImg1 {
+  width: 14.28%;
+  border-radius: 50%;
+}
+
+#gearImgID {
+  width: 100%;
+}
+
+div.panel {
+  display: flex;
+  justify-content: space-evenly;
+  flex-flow: row wrap;
+  align-items: center;
+
+  color: black;
+  font-weight: bold;
+  text-align: center;
+}
+
+#humidity {
+  font-size: 1.5em !important;
+
+}
+
+#temperature {
+  font-size: 1.5em !important;
+}
+
+#fuel {
+  font-size: 1.5em !important;
+
+}
+
+#speed {
+  font-size: 1.5em !important;
+}
+
+#airQuality {
+  font-size: 1.2em !important;
+}
+
+#temperatureMsg {
+  width: 100%;
+  color: black;
+  font-weight: bold;
+  font-size: 1.2em;
+  text-align: center;
+  background-color: #ffbf00;
 }

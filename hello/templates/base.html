@@ -11,12 +11,100 @@
     <link rel='stylesheet' href="{% static 'styles.css' %}">
     <script src='https://api.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.js'></script>
     <link href='https://api.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.css' rel='stylesheet' />
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+
 </head>
 
 <body>
 
 <div id="root-container" class="mainDiv">
-    <div id="root"> </div>
+  <div class="gears">
+    <div id = "gearImg">
+        <img id = "gearImgID" src="https://static.thenounproject.com/png/100612-200.png">
+    </div>
+    <div class="gear" id="1">
+    <p>1</p>
+  </div>
+    <div class="gear" id="2">
+    <p>2</p>
+  </div>
+
+    <div class="gear" id="3">
+    <p>3</p>
+  </div>
+
+    <div class="gear" id="4">
+    <p>4</p>
+  </div>
+
+    <div class="gear" id="5">
+    <p>5</p>
+  </div>
+
+    <div class="gear" id="0">
+    <p>N</p>
+    </div>
+
+  </div>
+
+  <div class="panel">
+    <div id = "gearImg">
+        <img id = "gearImgID" src="https://png.pngtree.com/svg/20170412/ad1c74309c.png">
+    </div>
+
+    <div id="speed">
+    <p>No data</p>
+    </div>
+
+    <div id = "gearImg">
+        <img id = "gearImgID" src="https://static.thenounproject.com/png/161606-200.png">
+    </div>
+
+    <div id="fuel">
+    <p>No data</p>
+    </div>
+
+    <div id = "gearImg1">
+        <img id = "gearImgID" src="https://cdn4.iconfinder.com/data/icons/automotive-maintenance/100/auto_seatbelt-512.png">
+    </div>
+  </div>
+
+
+
+  <div class="panel">
+    <div id = "gearImg">
+        <img id = "gearImgID" src="https://cdn.iconscout.com/icon/free/png-256/humidity-forecast-hydration-precipitation-temperature-weather-38924.png">
+    </div>
+
+    <div id="humidity">
+    <p>No data</p>
+    </div>
+
+    <div id = "gearImg">
+        <img id = "gearImgID" src="https://www.raspberrypi.org/documentation/configuration/images/over_temperature_80_85.png">
+    </div>
+
+    <div id="temperature">
+    <p>No data</p>
+    </div>
+
+
+    <div id = "gearImg">
+        <img id = "gearImgID" src="http://icons.iconarchive.com/icons/icons8/ios7/256/Astrology-Air-Element-icon.png">
+    </div>
+
+    <div id="airQuality">
+    <p>No data</p>
+    </div>
+  </div>
+
+  <div id="temperatureMsg">
+  </div>
+
+
+    <div id="root" class="root"></div>
+
     <div class="spotify-frame">
         <iframe
                 src="https://open.spotify.com/embed/user/mataspo/playlist/4iBO7KQXgzfV3z2OJ1YFUt"
@@ -150,7 +238,7 @@
                             this.setState({signalData: `${response.data.signal.measurement.value.toFixed(3)} m/s`,
                             })
                         } else if (this.props.name === 'ESP_Laengsbeschl') {
-                            this.setState({signalData: `${response.data.signal.measurement.value.toFixed(3)} m/s^2`,
+                            this.setState({signalData: `${response.data.signal.measurement.value.toFixed(3)} m/s\u00B2`,
                             })
                         } else if (this.props.name === 'ESP_Bremsdruck') {
                             this.setState({signalData: `${response.data.signal.measurement.value.toFixed(3)} Bar`,
@@ -170,6 +258,76 @@
                 translation,
             } = this.props;
             const signalData = this.state.signalData;
+
+            if(name === 'MO_Gangposition') {
+              console.log({signalData});
+
+              if (signalData!== null){
+                var ele = document.getElementsByClassName('gear');
+                for (var i = 0; i < ele.length; i++ ) {
+                    ele[i].style.background = "#fff9f9";
+                    ele[i].style.color = "black";
+                }
+                document.getElementById(signalData).style.background = "green";
+                document.getElementById(signalData).style.color = "white";
+
+              }
+              console.log("gear"+{signalData});
+              return null
+            }
+
+            if(name === 'ESP_v_Signal') {
+              if (signalData!== null){
+                document.getElementById("speed").innerHTML = Math.round(parseFloat(signalData)*3.6)+" km/h";
+              }
+              return null
+            }
+
+            if(name === 'FS_Temp_Sensor') {
+              if (signalData!== null){
+                document.getElementById("temperature").innerHTML = Math.round(parseFloat(signalData)*10)/10+"ºC";
+                if(signalData>=18 && signalData<=22){
+                  document.getElementById("temperatureMsg").innerHTML = "";
+                } else {
+                  document.getElementById("temperatureMsg").innerHTML = "Change temperature to 18-22ºC to feel comfortable";
+                }
+              }
+              return null
+            }
+
+            if(name === 'FS_Luftfeuchte_rel') {
+              if (signalData!== null){
+                document.getElementById("humidity").innerHTML = Math.round(parseFloat(signalData)*10)/10;
+                if(signalData>=30 && signalData<=50){
+                  document.getElementById("airQuality").innerHTML = "Comfortable";
+                } else {
+                  document.getElementById("airQuality").innerHTML = "Needs Change";
+                }
+              }
+              return null
+            }
+
+            if(name === 'KBI_Tankfuellstand_Prozent') {
+              if (signalData!== null){
+                document.getElementById("fuel").innerHTML = (signalData);
+              }
+              return null
+            }
+
+
+            if(name === 'AB_Gurtschloss_FA') {
+              console.log(signalData);
+              if (signalData!== null){
+                if(signalData === "Fastened"){
+                  document.getElementById('gearImg1').style.background = "green";
+                } else {
+                  document.getElementById('gearImg1').style.background = "red";
+                }
+              }
+              return null
+            }
+
+
             const textElement = <div className="textElement">
                 <p className={`${name}-${signalData ? signalData : null}`}>
                     {`${translation}: ${signalData}`}
@@ -185,8 +343,8 @@
 
             this.state = {
                 signalNames: [
-                    'ESP_v_Signal',
                     'MO_Gangposition',
+                    'ESP_v_Signal',
                     'ESP_Laengsbeschl',
                     'AB_Gurtschloss_FA',
                     'MO_Drehzahl_01',
